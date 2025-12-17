@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package  students.models.v1;
+package  gamestats.models.v1;
 option go_package = "github.com/JustRussianGuy/GameStats/internal/pb/models";
 
 message PlayerStats {

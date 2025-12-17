@@ -1,38 +1,55 @@
 syntax = "proto3";
-package students.service.v1;
+package gamestats.service.v1;
 option go_package = "github.com/JustRussianGuy/GameStats/internal/pb/gamestats_api";
 import "api/models/player_model.proto";
 import "api/google/api/annotations.proto";
 
 service GameStatsService {
-
-  rpc GetPlayerStats (GetPlayerStatsRequest)
-    returns (GetPlayerStatsResponse) {
+  rpc AddEvent(PlayerEvent) returns (AddEventResponse) {
     option (google.api.http) = {
-      post: "/gamestats/player/get"
+      post: "/gamestats/event"
       body: "*"
     };
   }
 
-  rpc UpsertPlayerStats (UpsertPlayerStatsRequest)
-    returns (UpsertPlayerStatsResponse) {
+  rpc GetPlayerStats(PlayerRequest) returns (PlayerStats) {
     option (google.api.http) = {
-      post: "/gamestats/player/upsert"
-      body: "*"
+      get: "/gamestats/player/{player_id}"
+    };
+  }
+
+  rpc GetLeaderboard(LeaderboardRequest) returns (LeaderboardResponse) {
+    option (google.api.http) = {
+      get: "/gamestats/leaderboard"
     };
   }
 }
 
-message GetPlayerStatsRequest {
-  repeated uint64 player_ids = 1;
+message PlayerEvent {
+  uint64 player_id = 1;
+  uint64 victim_id = 2;
+  int64 timestamp = 3;
 }
 
-message GetPlayerStatsResponse {
-  repeated gamestats.models.v1.PlayerStats stats = 1;
+message PlayerRequest {
+  uint64 player_id = 1;
 }
 
-message UpsertPlayerStatsRequest {
-  repeated gamestats.models.v1.PlayerStatsUpsert stats = 1;
+message PlayerStats {
+  uint64 player_id = 1;
+  uint64 kills = 2;
+  uint64 deaths = 3;
+  int64 score = 4;
 }
 
-message UpsertPlayerStatsResponse {}
+message LeaderboardRequest {
+  int32 limit = 1;
+}
+
+message LeaderboardResponse {
+  repeated PlayerStats players = 1;
+}
+
+message AddEventResponse {
+  bool success = 1;
+}
