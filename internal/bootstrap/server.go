@@ -9,9 +9,8 @@ import (
 	"os"
 
 	server "github.com/JustRussianGuy/GameStats/internal/api/gamestats_api"
-	studentsinfoupsertconsumer "github.com/JustRussianGuy/GameStats/internal/consumer/students_Info_upsert_consumer"
+	"github.com/JustRussianGuy/GameStats/internal/consumer/eventsconsumer"
 
-	"github.com/JustRussianGuy/GameStats/internal/pb/gamestats_api"
 	"github.com/go-chi/chi/v5"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -19,29 +18,33 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func AppRun(api server.StudentServiceAPI, studentInfoUpsertConsumer *studentsinfoupsertconsumer.StudentInfoUpsertConsumer) {
-	go studentInfoUpsertConsumer.Consume(context.Background())
+func AppRun(api server.GameStatsAPI, playerEventConsumer *eventsconsumer.PlayerEventConsumer) {
+	// Запускаем консьюмера Kafka в отдельной горутине
+	go playerEventConsumer.Consume(context.Background())
+
+	// Запускаем gRPC сервер
 	go func() {
 		if err := runGRPCServer(api); err != nil {
 			panic(fmt.Errorf("failed to run gRPC server: %v", err))
 		}
 	}()
 
+	// Запускаем HTTP Gateway
 	if err := runGatewayServer(); err != nil {
 		panic(fmt.Errorf("failed to run gateway server: %v", err))
 	}
 }
 
-func runGRPCServer(api server.StudentServiceAPI) error {
+func runGRPCServer(api server.GameStatsAPI) error {
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		return err
 	}
 
 	s := grpc.NewServer()
-	students_api.RegisterStudentsServiceServer(s, &api)
+	gamestats_api.RegisterGameStatsServiceServer(s, &api)
 
-	slog.Info("gRPC-server server listening on :50051")
+	slog.Info("gRPC server listening on :50051")
 	return s.Serve(lis)
 }
 
@@ -50,7 +53,7 @@ func runGatewayServer() error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	swaggerPath := os.Getenv("swaggerPath")
+	swaggerPath := os.Getenv("SWAGGER_PATH")
 	if _, err := os.Stat(swaggerPath); os.IsNotExist(err) {
 		panic(fmt.Errorf("swagger file not found: %s", swaggerPath))
 	}
@@ -67,7 +70,7 @@ func runGatewayServer() error {
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	err := students_api.RegisterStudentsServiceHandlerFromEndpoint(ctx, mux, ":50051", opts)
+	err := gamestats_api.RegisterGameStatsServiceHandlerFromEndpoint(ctx, mux, ":50051", opts)
 	if err != nil {
 		panic(err)
 	}
