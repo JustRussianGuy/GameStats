@@ -1,0 +1,38 @@
+syntax = "proto3";
+package students.service.v1;
+option go_package = "github.com/JustRussianGuy/GameStats/internal/pb/gamestats_api";
+import "api/models/player_model.proto";
+import "api/google/api/annotations.proto";
+
+service GameStatsService {
+
+  rpc GetPlayerStats (GetPlayerStatsRequest)
+    returns (GetPlayerStatsResponse) {
+    option (google.api.http) = {
+      post: "/gamestats/player/get"
+      body: "*"
+    };
+  }
+
+  rpc UpsertPlayerStats (UpsertPlayerStatsRequest)
+    returns (UpsertPlayerStatsResponse) {
+    option (google.api.http) = {
+      post: "/gamestats/player/upsert"
+      body: "*"
+    };
+  }
+}
+
+message GetPlayerStatsRequest {
+  repeated uint64 player_ids = 1;
+}
+
+message GetPlayerStatsResponse {
+  repeated gamestats.models.v1.PlayerStats stats = 1;
+}
+
+message UpsertPlayerStatsRequest {
+  repeated gamestats.models.v1.PlayerStatsUpsert stats = 1;
+}
+
+message UpsertPlayerStatsResponse {}

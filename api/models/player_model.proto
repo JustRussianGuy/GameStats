@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package  students.models.v1;
+option go_package = "github.com/JustRussianGuy/GameStats/internal/pb/models";
+
+message PlayerStats {
+  uint64 player_id = 1;
+  uint64 game_id   = 2;
+  uint64 kills     = 3;
+  uint64 deaths    = 4;
+  uint64 score     = 5;
+}
+
+message PlayerStatsUpsert {
+  uint64 player_id = 1;
+  uint64 game_id   = 2;
+  uint64 kills     = 3;
+  uint64 deaths    = 4;
+  uint64 score     = 5;
+}
