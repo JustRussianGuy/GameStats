@@ -2,19 +2,16 @@ package pgstorage
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
 )
 
-func (s *PGstorage) IncrementKill(ctx context.Context, playerID uint64) error {
-	playerIDStr := strconv.FormatUint(playerID, 10)
-
+func (s *PGstorage) IncrementKill(ctx context.Context, playerID string) error {
 	query := squirrel.
 		Insert(tableName).
 		Columns(PlayerIDColumn, KillsColumn, DeathsColumn, ScoreColumn).
-		Values(playerIDStr, 1, 0, 1).
+		Values(playerID, 1, 0, 1).
 		Suffix(`
 			ON CONFLICT (player_id)
 			DO UPDATE SET
@@ -32,13 +29,11 @@ func (s *PGstorage) IncrementKill(ctx context.Context, playerID uint64) error {
 	return errors.Wrap(err, "exec increment kill")
 }
 
-func (s *PGstorage) IncrementDeath(ctx context.Context, playerID uint64) error {
-	playerIDStr := strconv.FormatUint(playerID, 10)
-
+func (s *PGstorage) IncrementDeath(ctx context.Context, playerID string) error {
 	query := squirrel.
 		Insert(tableName).
 		Columns(PlayerIDColumn, KillsColumn, DeathsColumn, ScoreColumn).
-		Values(playerIDStr, 0, 1, -1).
+		Values(playerID, 0, 1, -1).
 		Suffix(`
 			ON CONFLICT (player_id)
 			DO UPDATE SET

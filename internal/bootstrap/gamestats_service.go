@@ -15,8 +15,7 @@ func InitGameStatsService(
 
 	return gamestatsService.NewGameStatsService(
 		context.Background(),
-		storage,
-		cfg.GameSettings.KillPoints,
-		cfg.GameSettings.DeathPenalty,
+		storage, // PGstorage должен реализовывать PlayerStatsStorage
+		cfg,     // передаем весь конфиг
 	)
 }

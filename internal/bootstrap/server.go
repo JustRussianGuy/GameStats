@@ -10,6 +10,8 @@ import (
 
 	server "github.com/JustRussianGuy/GameStats/internal/api/gamestats_api"
 	"github.com/JustRussianGuy/GameStats/internal/consumer/eventsconsumer"
+	
+	"github.com/JustRussianGuy/GameStats/internal/pb/gamestats_api"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -18,9 +20,9 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func AppRun(api server.GameStatsAPI, playerEventConsumer *eventsconsumer.PlayerEventConsumer) {
+func AppRun(api server.GameStatsAPI, gameEventsConsumer *eventsconsumer.GameEventsConsumer) {
 	// Запускаем консьюмера Kafka в отдельной горутине
-	go playerEventConsumer.Consume(context.Background())
+	go gameEventsConsumer.Consume(context.Background())
 
 	// Запускаем gRPC сервер
 	go func() {
