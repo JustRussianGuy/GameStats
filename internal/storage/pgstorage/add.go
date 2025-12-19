@@ -6,7 +6,6 @@ import (
 	"github.com/JustRussianGuy/GameStats/internal/models"
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
-	"github.com/samber/lo"
 )
 
 func (s *PGstorage) IncrementKill(ctx context.Context, playerID string) error {
