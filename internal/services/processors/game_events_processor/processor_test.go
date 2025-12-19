@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/JustRussianGuy/GameStats/internal/models"
-	"github.com/JustRussianGuy/GameStats/internal/services/gamestats/mocks"
+	"github.com/JustRussianGuy/GameStats/internal/services/gamestatsService/mocks"
 	"github.com/stretchr/testify/suite"
 )
 
