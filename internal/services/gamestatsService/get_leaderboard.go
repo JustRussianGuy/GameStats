@@ -6,7 +6,7 @@ import (
 	"github.com/JustRussianGuy/GameStats/internal/models"
 )
 
-func (s *Service) GetLeaderboard(
+func (s *GameStatsService) GetLeaderboard(
 	ctx context.Context,
 	limit int,
 ) ([]*models.PlayerStats, error) {

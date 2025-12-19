@@ -15,7 +15,7 @@ type GameStatsServiceSuite struct {
 	suite.Suite
 	ctx     context.Context
 	storage *mocks.PlayerStatsStorage
-	service *Service
+	service *GameStatsService
 }
 
 func (s *GameStatsServiceSuite) SetupTest() {
@@ -29,7 +29,7 @@ func (s *GameStatsServiceSuite) SetupTest() {
 		},
 	}
 
-	s.service = NewService(s.ctx, s.storage, cfg)
+	s.service = NewGameStatsService(s.ctx, s.storage, cfg)
 }
 
 func (s *GameStatsServiceSuite) TestProcessGameEventSuccess() {

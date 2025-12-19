@@ -6,7 +6,7 @@ import (
 	"github.com/JustRussianGuy/GameStats/internal/models"
 )
 
-func (s *Service) GetPlayerStats(
+func (s *GameStatsService) GetPlayerStats(
 	ctx context.Context,
 	playerID string,
 ) (*models.PlayerStats, error) {

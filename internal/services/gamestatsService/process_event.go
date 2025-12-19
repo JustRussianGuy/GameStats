@@ -6,7 +6,7 @@ import (
 	"github.com/JustRussianGuy/GameStats/internal/models"
 )
 
-func (s *Service) ProcessGameEvent(
+func (s *GameStatsService) ProcessGameEvent(
 	ctx context.Context,
 	event *models.GameEvent,
 ) error {

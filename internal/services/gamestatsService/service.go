@@ -7,9 +7,9 @@ import (
 )
 
 type GameStatsService struct {
-	storage       PlayerStatsStorage
-	killPoints    int
-	deathPenalty  int
+	storage      PlayerStatsStorage
+	killPoints   int
+	deathPenalty int
 }
 
 func NewGameStatsService(
