@@ -12,7 +12,7 @@ type PGstorage struct {
 	db *pgxpool.Pool
 }
 
-func NewPGStorge(connString string) (*PGstorage, error) {
+func NewPGStorage(connString string) (*PGstorage, error) {
 
 	config, err := pgxpool.ParseConfig(connString)
 	if err != nil {

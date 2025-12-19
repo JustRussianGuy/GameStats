@@ -23,3 +23,4 @@ func NewGameStatsService(
 		deathPenalty: cfg.GameSettings.DeathPenalty,
 	}
 }
+

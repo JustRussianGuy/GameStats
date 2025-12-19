@@ -11,12 +11,19 @@ import (
 
 func (g *GameStatsAPI) PostEvent(
 	ctx context.Context,
-	req *gamestats_api.PlayerEvent,
+	req *gamestats_api.AddEventRequest,
 ) (*gamestats_api.AddEventResponse, error) {
 
-	// Преобразуем uint64 -> string для доменной модели
-	killerID := strconv.FormatUint(req.PlayerId, 10)
-	victimID := strconv.FormatUint(req.VictimId, 10)
+	// Преобразуем string -> uint64
+	killerID, err := strconv.ParseUint(req.KillerId, 10, 64)
+	if err != nil {
+		return &gamestats_api.AddEventResponse{Success: false}, err
+	}
+
+	victimID, err := strconv.ParseUint(req.VictimId, 10, 64)
+	if err != nil {
+		return &gamestats_api.AddEventResponse{Success: false}, err
+	}
 
 	event := &models.GameEvent{
 		KillerID:   killerID,
@@ -24,11 +31,12 @@ func (g *GameStatsAPI) PostEvent(
 		OccurredAt: time.Now(),
 	}
 
-	err := g.service.ProcessKillEvent(ctx, event)
+	err = g.service.ProcessKillEvent(ctx, event)
 	if err != nil {
 		return &gamestats_api.AddEventResponse{Success: false}, err
 	}
 
 	return &gamestats_api.AddEventResponse{Success: true}, nil
 }
+
 

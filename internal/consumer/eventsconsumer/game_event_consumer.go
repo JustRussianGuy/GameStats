@@ -11,20 +11,20 @@ import (
 )
 
 // Интерфейс обработчика игровых событий
-type PlayerEventProcessor interface {
+type GameEventsProcessor interface {
 	Handle(ctx context.Context, event *models.GameEvent) error
 }
 
 // Консьюмер Kafka для игровых событий
-type PlayerEventConsumer struct {
-	playerEventProcessor PlayerEventProcessor
+type GameEventsConsumer struct {
+	playerEventProcessor GameEventsProcessor
 	kafkaBroker          []string
 	topicName            string
 }
 
 // Конструктор
-func NewPlayerEventConsumer(processor PlayerEventProcessor, kafkaBroker []string, topicName string) *PlayerEventConsumer {
-	return &PlayerEventConsumer{
+func NewGameEventsConsumer(processor GameEventsProcessor, kafkaBroker []string, topicName string) *GameEventsConsumer {
+	return &GameEventsConsumer{
 		playerEventProcessor: processor,
 		kafkaBroker:          kafkaBroker,
 		topicName:            topicName,
@@ -32,7 +32,7 @@ func NewPlayerEventConsumer(processor PlayerEventProcessor, kafkaBroker []string
 }
 
 // Метод запуска потребления сообщений
-func (c *PlayerEventConsumer) Consume(ctx context.Context) {
+func (c *GameEventsConsumer) Consume(ctx context.Context) {
 	r := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:           c.kafkaBroker,
 		GroupID:           "GameStats_group",

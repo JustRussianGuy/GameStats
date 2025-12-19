@@ -22,10 +22,10 @@ func main() {
     gameStatsService := bootstrap.InitGameStatsService(playerStorage, cfg)
 
     // Processor for player events (kill/death)
-    playerEventsProcessor := bootstrap.InitPlayerEventsProcessor(gameStatsService)
+    playerEventsProcessor := bootstrap.InitGameEventsProcessor(gameStatsService)
 
     // Kafka consumer for game events
-    kafkaConsumer := bootstrap.InitPlayerEventsConsumer(cfg, playerEventsProcessor)
+    kafkaConsumer := bootstrap.InitGameEventsConsumer(cfg, playerEventsProcessor)
 
     // API (POST /events, GET /stats/{id}, GET /leaderboard)
     api := bootstrap.InitGameStatsAPI(gameStatsService)
