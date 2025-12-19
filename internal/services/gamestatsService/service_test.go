@@ -14,13 +14,13 @@ import (
 type GameStatsServiceSuite struct {
 	suite.Suite
 	ctx     context.Context
-	storage *mocks.PlayerStatsStorage
+	storage *mocks.MockPlayerStatsStorage
 	service *GameStatsService
 }
 
 func (s *GameStatsServiceSuite) SetupTest() {
 	s.ctx = context.Background()
-	s.storage = mocks.NewPlayerStatsStorage(s.T())
+	s.storage = mocks.NewMockPlayerStatsStorage(s.T())
 
 	cfg := &config.Config{
 		GameSettings: config.GameSettings{
@@ -34,16 +34,16 @@ func (s *GameStatsServiceSuite) SetupTest() {
 
 func (s *GameStatsServiceSuite) TestProcessGameEventSuccess() {
 	event := &models.GameEvent{
-		KillerID: "player-1",
-		VictimID: "player-2",
+		KillerID: 1,
+		VictimID: 2,
 	}
 
 	s.storage.EXPECT().
-		IncrementKill(s.ctx, "player-1").
+		IncrementKill(s.ctx, "1").
 		Return(nil)
 
 	s.storage.EXPECT().
-		IncrementDeath(s.ctx, "player-2").
+		IncrementDeath(s.ctx, "2").
 		Return(nil)
 
 	err := s.service.ProcessGameEvent(s.ctx, event)
@@ -52,14 +52,14 @@ func (s *GameStatsServiceSuite) TestProcessGameEventSuccess() {
 
 func (s *GameStatsServiceSuite) TestProcessGameEventKillError() {
 	event := &models.GameEvent{
-		KillerID: "player-1",
-		VictimID: "player-2",
+		KillerID: 1,
+		VictimID: 2,
 	}
 
 	wantErr := errors.New("db error")
 
 	s.storage.EXPECT().
-		IncrementKill(s.ctx, "player-1").
+		IncrementKill(s.ctx, "1").
 		Return(wantErr)
 
 	err := s.service.ProcessGameEvent(s.ctx, event)
@@ -68,27 +68,29 @@ func (s *GameStatsServiceSuite) TestProcessGameEventKillError() {
 
 func (s *GameStatsServiceSuite) TestGetPlayerStats() {
 	stats := &models.PlayerStats{
-		PlayerID: "player-1",
+		PlayerID: 1,
 		Kills:    10,
 		Deaths:   3,
 		Score:    7,
 	}
 
 	s.storage.EXPECT().
-		GetPlayerStats(s.ctx, "player-1").
+		GetPlayerStats(s.ctx, "1").
 		Return(stats, nil)
 
-	res, err := s.service.GetPlayerStats(s.ctx, "player-1")
+	res, err := s.service.GetPlayerStats(s.ctx, 1)
 
 	s.NoError(err)
 	s.Equal(stats, res)
 }
 
 func (s *GameStatsServiceSuite) TestGetLeaderboardDefaultLimit() {
+	
 	leaderboard := []*models.PlayerStats{
-		{PlayerID: "p1", Score: 10},
-		{PlayerID: "p2", Score: 7},
+		{PlayerID: 1, Score: 10},
+		{PlayerID: 2, Score: 7},
 	}
+	
 
 	s.storage.EXPECT().
 		GetLeaderboard(s.ctx, 10).
@@ -103,3 +105,4 @@ func (s *GameStatsServiceSuite) TestGetLeaderboardDefaultLimit() {
 func TestGameStatsServiceSuite(t *testing.T) {
 	suite.Run(t, new(GameStatsServiceSuite))
 }
+
