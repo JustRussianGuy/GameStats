@@ -3,7 +3,6 @@ package pgstorage
 import (
 	"context"
 
-	"github.com/JustRussianGuy/GameStats/internal/models"
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
 )

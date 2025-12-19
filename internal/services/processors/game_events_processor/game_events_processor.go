@@ -12,10 +12,10 @@ type GameStatsService interface {
 }
 
 type GameEventsProcessor struct {
-	service GameStatsService
+	service gamestatsService.GameStatsService
 }
 
-func NewGameEventsProcessor(service GameStatsService) *GameEventsProcessor {
+func NewGameEventsProcessor(service gamestatsService.GameStatsService) *GameEventsProcessor {
 	return &GameEventsProcessor{
 		service: service,
 	}

@@ -3,6 +3,7 @@ package gamestats_api
 import (
 	"context"
 	"time"
+	"strconv"
 
 	"github.com/JustRussianGuy/GameStats/internal/models"
 	"github.com/JustRussianGuy/GameStats/internal/pb/gamestats_api"
@@ -13,9 +14,13 @@ func (g *GameStatsAPI) PostEvent(
 	req *gamestats_api.PlayerEvent,
 ) (*gamestats_api.AddEventResponse, error) {
 
+	// Преобразуем uint64 -> string для доменной модели
+	killerID := strconv.FormatUint(req.PlayerId, 10)
+	victimID := strconv.FormatUint(req.VictimId, 10)
+
 	event := &models.GameEvent{
-		KillerID:   req.PlayerId,
-		VictimID:   req.VictimId,
+		KillerID:   killerID,
+		VictimID:   victimID,
 		OccurredAt: time.Now(),
 	}
 

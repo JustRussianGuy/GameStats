@@ -2,6 +2,7 @@ package gamestats_api
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/JustRussianGuy/GameStats/internal/pb/gamestats_api"
 )
@@ -11,16 +12,22 @@ func (g *GameStatsAPI) GetPlayerStats(
 	req *gamestats_api.PlayerRequest,
 ) (*gamestats_api.PlayerStats, error) {
 
-	stats, err := g.service.GetPlayerStats(ctx, req.PlayerId)
+	// Преобразуем string -> uint64
+	playerID, err := strconv.ParseUint(req.PlayerId, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	stats, err := g.service.GetPlayerStats(ctx, playerID)
 	if err != nil {
 		return nil, err
 	}
 
 	return &gamestats_api.PlayerStats{
-		PlayerId: stats.PlayerID,
-		Kills:    stats.Kills,
-		Deaths:   stats.Deaths,
-		Score:    stats.Score,
+		PlayerId: strconv.FormatUint(stats.PlayerID, 10), // uint64 -> string
+		Kills:    int64(stats.Kills),                     // uint64 -> int64
+		Deaths:   int64(stats.Deaths),                    // uint64 -> int64
+		Score:    int64(stats.Score),
 	}, nil
 }
 

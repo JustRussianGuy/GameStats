@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/JustRussianGuy/GameStats/config"
-	playereventsconsumer "github.com/JustRussianGuy/GameStats/internal/consumer/player_events_consumer"
-	playereventsprocessor "github.com/JustRussianGuy/GameStats/internal/services/processors/player_events_processor"
+	playereventsconsumer "github.com/JustRussianGuy/GameStats/internal/consumer/eventsconsumer"
+	playereventsprocessor "github.com/JustRussianGuy/GameStats/internal/services/processors/game_events_processor"
 )
 
 func InitPlayerEventsConsumer(
