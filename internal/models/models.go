@@ -4,15 +4,15 @@ import "time"
 
 // Событие убийства игрока
 type GameEvent struct {
-	KillerID   string
-	VictimID  string
+	KillerID   uint64
+	VictimID   uint64
 	OccurredAt time.Time
 }
 
 // Агрегированная статистика игрока
 type PlayerStats struct {
-	PlayerID string
-	Kills    int64
-	Deaths   int64
+	PlayerID uint64
+	Kills    uint64
+	Deaths   uint64
 	Score    int64 // kills - deaths
 }

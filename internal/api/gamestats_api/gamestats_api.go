@@ -9,7 +9,7 @@ import (
 
 type gameStatsService interface {
 	ProcessKillEvent(ctx context.Context, event *models.GameEvent) error
-	GetPlayerStats(ctx context.Context, playerID string) (*models.PlayerStats, error)
+	GetPlayerStats(ctx context.Context, playerID uint64) (*models.PlayerStats, error)
 	GetLeaderboard(ctx context.Context, limit int) ([]*models.PlayerStats, error)
 }
 
@@ -24,3 +24,4 @@ func NewGameStatsAPI(service gameStatsService) *GameStatsAPI {
 		service: service,
 	}
 }
+

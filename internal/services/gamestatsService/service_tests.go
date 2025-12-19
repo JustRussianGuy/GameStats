@@ -2,8 +2,8 @@ package gamestatsService
 
 import (
 	"context"
-	"testing"
 	"errors"
+	"testing"
 
 	"github.com/JustRussianGuy/GameStats/config"
 	"github.com/JustRussianGuy/GameStats/internal/models"
@@ -34,7 +34,7 @@ func (s *GameStatsServiceSuite) SetupTest() {
 
 func (s *GameStatsServiceSuite) TestProcessGameEventSuccess() {
 	event := &models.GameEvent{
-		KillerID:  "player-1",
+		KillerID: "player-1",
 		VictimID: "player-2",
 	}
 
@@ -52,7 +52,7 @@ func (s *GameStatsServiceSuite) TestProcessGameEventSuccess() {
 
 func (s *GameStatsServiceSuite) TestProcessGameEventKillError() {
 	event := &models.GameEvent{
-		KillerID:  "player-1",
+		KillerID: "player-1",
 		VictimID: "player-2",
 	}
 

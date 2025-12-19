@@ -10,21 +10,20 @@ import (
 
 func (g *GameStatsAPI) PostEvent(
 	ctx context.Context,
-	req *gamestats_api.PostEventRequest,
-) (*gamestats_api.PostEventResponse, error) {
+	req *gamestats_api.PlayerEvent,
+) (*gamestats_api.AddEventResponse, error) {
 
 	event := &models.GameEvent{
-		KillerID:   req.KillerId,
-		VictimID:  req.VictimId,
+		KillerID:   req.PlayerId,
+		VictimID:   req.VictimId,
 		OccurredAt: time.Now(),
 	}
 
 	err := g.service.ProcessKillEvent(ctx, event)
 	if err != nil {
-		return &gamestats_api.PostEventResponse{}, err
+		return &gamestats_api.AddEventResponse{Success: false}, err
 	}
 
-	return &gamestats_api.PostEventResponse{
-		Status: "ok",
-	}, nil
+	return &gamestats_api.AddEventResponse{Success: true}, nil
 }
+

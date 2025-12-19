@@ -16,7 +16,7 @@ func main() {
     }
 
     // PostgreSQL storage
-    playerStorage := bootstrap.InitPostgresPlayerStorage(cfg)
+    playerStorage := bootstrap.InitPGStorage(cfg)
 
     // Main business service
     gameStatsService := bootstrap.InitGameStatsService(playerStorage, cfg)

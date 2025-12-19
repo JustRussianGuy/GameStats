@@ -4,16 +4,16 @@ import (
 	"context"
 
 	"github.com/JustRussianGuy/GameStats/config"
-	"github.com/JustRussianGuy/GameStats/internal/services/gamestats"
+	"github.com/JustRussianGuy/GameStats/internal/services/gamestatsService"
 	"github.com/JustRussianGuy/GameStats/internal/storage/pgstorage"
 )
 
 func InitGameStatsService(
 	storage *pgstorage.PGstorage,
 	cfg *config.Config,
-) *gamestats.GameStatsService {
+) *gamestatsService.GameStatsService {
 
-	return gamestats.NewGameStatsService(
+	return gamestatsService.NewGameStatsService(
 		context.Background(),
 		storage,
 		cfg.GameSettings.KillPoints,

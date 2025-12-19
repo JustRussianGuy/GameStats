@@ -8,18 +8,19 @@ import (
 
 func (g *GameStatsAPI) GetPlayerStats(
 	ctx context.Context,
-	req *gamestats_api.GetPlayerStatsRequest,
-) (*gamestats_api.GetPlayerStatsResponse, error) {
+	req *gamestats_api.PlayerRequest,
+) (*gamestats_api.PlayerStats, error) {
 
 	stats, err := g.service.GetPlayerStats(ctx, req.PlayerId)
 	if err != nil {
-		return &gamestats_api.GetPlayerStatsResponse{}, err
+		return nil, err
 	}
 
-	return &gamestats_api.GetPlayerStatsResponse{
+	return &gamestats_api.PlayerStats{
 		PlayerId: stats.PlayerID,
 		Kills:    stats.Kills,
 		Deaths:   stats.Deaths,
 		Score:    stats.Score,
 	}, nil
 }
+

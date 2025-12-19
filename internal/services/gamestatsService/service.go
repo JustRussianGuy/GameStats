@@ -6,18 +6,18 @@ import (
 	"github.com/JustRussianGuy/GameStats/config"
 )
 
-type Service struct {
+type GameStatsService struct {
 	storage       PlayerStatsStorage
 	killPoints    int
 	deathPenalty  int
 }
 
-func NewService(
+func NewGameStatsService(
 	ctx context.Context,
 	storage PlayerStatsStorage,
 	cfg *config.Config,
-) *Service {
-	return &Service{
+) *GameStatsService {
+	return &GameStatsService{
 		storage:      storage,
 		killPoints:   cfg.GameSettings.KillPoints,
 		deathPenalty: cfg.GameSettings.DeathPenalty,
