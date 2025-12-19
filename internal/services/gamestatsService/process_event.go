@@ -29,3 +29,6 @@ func (s *GameStatsService) ProcessGameEvent(
 	return nil
 }
 
+func (s *GameStatsService) ProcessKillEvent(ctx context.Context, event *models.GameEvent) error {
+	return s.ProcessGameEvent(ctx, event)
+}
