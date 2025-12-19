@@ -1,11 +1,11 @@
 package main
 
 import (
-    "fmt"
-    "os"
+	"fmt"
+	"os"
 
-    "github.com/JustRussianGuy/GameStats/config"
-    "github.com/JustRussianGuy/GameStats/internal/bootstrap"
+	"github.com/JustRussianGuy/GameStats/config"
+	"github.com/JustRussianGuy/GameStats/internal/bootstrap"
 )
 
 func main() {
@@ -17,6 +17,9 @@ func main() {
 
     // PostgreSQL storage
     playerStorage := bootstrap.InitPGStorage(cfg)
+
+    // Redis
+    bootstrap.InitRedis(cfg)
 
     // Main business service
     gameStatsService := bootstrap.InitGameStatsService(playerStorage, cfg)

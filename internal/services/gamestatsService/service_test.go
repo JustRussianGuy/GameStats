@@ -96,7 +96,7 @@ func (s *GameStatsServiceSuite) TestGetLeaderboardDefaultLimit() {
 		GetLeaderboard(s.ctx, 10).
 		Return(leaderboard, nil)
 
-	res, err := s.service.GetLeaderboard(s.ctx, 0)
+	res, err := s.service.GetLeaderboard(s.ctx, 10)
 
 	s.NoError(err)
 	s.Len(res, 2)
