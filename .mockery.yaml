@@ -2,8 +2,7 @@ packages:
     github.com/JustRussianGuy/GameStats/internal/services/gamestatsService:
         config:
             dir: "{{.InterfaceDir}}/mocks"
-            filename: "mocks.go"
-            pkgname: "mocks"
             structname: "{{.InterfaceName}}"
+            with-expecter: true
         interfaces:
-            StudentStorage:
+            PlayerStatsStorage:

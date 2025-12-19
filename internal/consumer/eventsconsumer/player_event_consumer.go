@@ -1,6 +1,10 @@
 package eventsconsumer
 
-import "context"
+import (
+	"context"
+
+	"github.com/JustRussianGuy/GameStats/internal/models"
+)
 
 type PlayerEventProcessor interface {
 	Handle(ctx context.Context, event *PlayerEvent) error

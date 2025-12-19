@@ -3,38 +3,52 @@ package pgstorage
 import (
 	"context"
 
-	"github.com/Domenick1991/students/internal/models"
+	"github.com/JustRussianGuy/GameStats/internal/models"
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
 )
 
-func (storage *PGstorage) UpsertStudentInfo(ctx context.Context, studentInfos []*models.StudentInfo) error {
-	query := storage.upsertQuery(studentInfos)
-	queryText, args, err := query.ToSql()
+func (s *PGstorage) IncrementKill(ctx context.Context, playerID string) error {
+	query := squirrel.
+		Insert(tableName).
+		Columns(PlayerIDColumn, KillsColumn, DeathsColumn, ScoreColumn).
+		Values(playerID, 1, 0, 1).
+		Suffix(`
+			ON CONFLICT (player_id)
+			DO UPDATE SET
+				kills = player_stats.kills + 1,
+				score = player_stats.score + 1
+		`).
+		PlaceholderFormat(squirrel.Dollar)
+
+	sql, args, err := query.ToSql()
 	if err != nil {
-		return errors.Wrap(err, "generate query error")
+		return errors.Wrap(err, "build increment kill query")
 	}
-	_, err = storage.db.Exec(ctx, queryText, args...)
-	if err != nil {
-		err = errors.Wrap(err, "exeс query")
-	}
-	return err
+
+	_, err = s.db.Exec(ctx, sql, args...)
+	return errors.Wrap(err, "exec increment kill")
 }
 
-func (storage *PGstorage) upsertQuery(studentInfos []*models.StudentInfo) squirrel.Sqlizer {
-	infos := lo.Map(studentInfos, func(info *models.StudentInfo, _ int) *StudentInfo {
-		return &StudentInfo{
-			Name:  info.Name,
-			Email: info.Email,
-			Age:   info.Age,
-		}
-	})
-
-	q := squirrel.Insert(tableName).Columns(NameСolumnName, EmailСolumnName, AgeСolumnName).
+func (s *PGstorage) IncrementDeath(ctx context.Context, playerID string) error {
+	query := squirrel.
+		Insert(tableName).
+		Columns(PlayerIDColumn, KillsColumn, DeathsColumn, ScoreColumn).
+		Values(playerID, 0, 1, -1).
+		Suffix(`
+			ON CONFLICT (player_id)
+			DO UPDATE SET
+				deaths = player_stats.deaths + 1,
+				score  = player_stats.score - 1
+		`).
 		PlaceholderFormat(squirrel.Dollar)
-	for _, info := range infos {
-		q = q.Values(info.Name, info.Email, info.Age)
+
+	sql, args, err := query.ToSql()
+	if err != nil {
+		return errors.Wrap(err, "build increment death query")
 	}
-	return q
+
+	_, err = s.db.Exec(ctx, sql, args...)
+	return errors.Wrap(err, "exec increment death")
 }

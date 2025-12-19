@@ -36,15 +36,23 @@ func NewPGStorge(connString string) (*PGstorage, error) {
 
 func (s *PGstorage) initTables() error {
 	sql := fmt.Sprintf(`
-    CREATE TABLE IF NOT EXISTS %v (
-        %v SERIAL PRIMARY KEY,
-        %v VARCHAR(100) NOT NULL,
-        %v VARCHAR(255) UNIQUE NOT NULL,
-        %v INT
-    )`, tableName, IDСolumnName, NameСolumnName, EmailСolumnName, AgeСolumnName)
+	CREATE TABLE IF NOT EXISTS %v (
+		%v VARCHAR(64) PRIMARY KEY,
+		%v BIGINT NOT NULL DEFAULT 0,
+		%v BIGINT NOT NULL DEFAULT 0,
+		%v BIGINT NOT NULL DEFAULT 0
+	)`,
+		tableName,
+		PlayerIDColumn,
+		KillsColumn,
+		DeathsColumn,
+		ScoreColumn,
+	)
+
 	_, err := s.db.Exec(context.Background(), sql)
 	if err != nil {
-		return errors.Wrap(err, "initition tables")
+		return errors.Wrap(err, "init tables")
 	}
 	return nil
 }
+

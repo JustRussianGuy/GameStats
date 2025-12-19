@@ -1,17 +1,18 @@
 package pgstorage
 
-type StudentInfo struct {
-	ID    uint64 `db:"id"`
-	Name  string `db:"name"`
-	Email string `db:"email"`
-	Age   uint64 `db:"age"`
+type PlayerStats struct {
+	PlayerID string `db:"player_id"`
+	Kills    int64  `db:"kills"`
+	Deaths   int64  `db:"deaths"`
+	Score    int64  `db:"score"`
 }
 
 const (
-	tableName = "studentsInfo"
+	tableName = "player_stats"
 
-	IDСolumnName    = "id"
-	NameСolumnName  = "name"
-	EmailСolumnName = "email"
-	AgeСolumnName   = "age"
+	PlayerIDColumn = "player_id"
+	KillsColumn    = "kills"
+	DeathsColumn   = "deaths"
+	ScoreColumn    = "score"
 )
+

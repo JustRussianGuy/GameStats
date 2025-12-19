@@ -3,34 +3,79 @@ package pgstorage
 import (
 	"context"
 
-	"github.com/Domenick1991/students/internal/models"
+	"github.com/JustRussianGuy/GameStats/internal/models"
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
 )
 
-func (storage *PGstorage) GetStudentInfoByIDs(ctx context.Context, IDs []uint64) ([]*models.StudentInfo, error) {
-	query := storage.getQuery(IDs)
-	queryText, args, err := query.ToSql()
+func (s *PGstorage) GetPlayerStats(
+	ctx context.Context,
+	playerID string,
+) (*models.PlayerStats, error) {
+
+	query := squirrel.
+		Select(PlayerIDColumn, KillsColumn, DeathsColumn, ScoreColumn).
+		From(tableName).
+		Where(squirrel.Eq{PlayerIDColumn: playerID}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	sql, args, err := query.ToSql()
 	if err != nil {
-		return nil, errors.Wrap(err, "generate query error")
+		return nil, errors.Wrap(err, "build get stats query")
 	}
-	rows, err := storage.db.Query(ctx, queryText, args...)
+
+	row := s.db.QueryRow(ctx, sql, args...)
+
+	var stats models.PlayerStats
+	err = row.Scan(
+		&stats.PlayerID,
+		&stats.Kills,
+		&stats.Deaths,
+		&stats.Score,
+	)
 	if err != nil {
-		return nil, errors.Wrap(err, "quering error")
+		return nil, errors.Wrap(err, "scan stats")
 	}
-	var students []*models.StudentInfo
-	for rows.Next() {
-		var s models.StudentInfo
-		if err := rows.Scan(&s.ID, &s.Name, &s.Email, &s.Age); err != nil {
-			return nil, errors.Wrap(err, "failed to scan row")
-		}
-		students = append(students, &s)
-	}
-	return students, nil
+
+	return &stats, nil
 }
 
-func (storage *PGstorage) getQuery(IDs []uint64) squirrel.Sqlizer {
-	q := squirrel.Select(IDСolumnName, NameСolumnName, EmailСolumnName, AgeСolumnName).From(tableName).
-		Where(squirrel.Eq{IDСolumnName: IDs}).PlaceholderFormat(squirrel.Dollar)
-	return q
+func (s *PGstorage) GetLeaderboard(
+	ctx context.Context,
+	limit int,
+) ([]*models.PlayerStats, error) {
+
+	query := squirrel.
+		Select(PlayerIDColumn, KillsColumn, DeathsColumn, ScoreColumn).
+		From(tableName).
+		OrderBy("score DESC").
+		Limit(uint64(limit)).
+		PlaceholderFormat(squirrel.Dollar)
+
+	sql, args, err := query.ToSql()
+	if err != nil {
+		return nil, errors.Wrap(err, "build leaderboard query")
+	}
+
+	rows, err := s.db.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, errors.Wrap(err, "query leaderboard")
+	}
+	defer rows.Close()
+
+	var res []*models.PlayerStats
+	for rows.Next() {
+		var ps models.PlayerStats
+		if err := rows.Scan(
+			&ps.PlayerID,
+			&ps.Kills,
+			&ps.Deaths,
+			&ps.Score,
+		); err != nil {
+			return nil, errors.Wrap(err, "scan leaderboard")
+		}
+		res = append(res, &ps)
+	}
+
+	return res, nil
 }

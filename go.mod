@@ -19,6 +19,7 @@ require (
 )
 
 require (
+	github.com/Domenick1991/students v0.0.0-20251129060035-ba38c862f4e7 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-openapi/jsonpointer v0.22.3 // indirect
