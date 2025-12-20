@@ -1,21 +1,21 @@
 database:
-  host: "127.0.0.1"
+  host: "127.0.0.1"      # PostgreSQL на локальной машине через проброс порта
   port: 5432
-  username: "postgress"
+  username: "admin"
   password: "12345"
   name: "gamestats"
   ssl_mode: "disable"
 
 kafka:
-  host: "localhost"
+  host: "127.0.0.1"      # Kafka доступна с хоста через PLAINTEXT_HOST (порт 9092)
   port: 9092
   player_events_topic: "player_events"
 
 redis:
-  host: "localhost"
+  host: "127.0.0.1"      # Redis доступен с хоста через проброс порта
   port: 6379
   db: 0
 
 game_settings:
   kill_points: 1
-  death_penalty: -1  
+  death_penalty: -1

@@ -9,7 +9,7 @@ import (
 	"github.com/JustRussianGuy/GameStats/internal/pb/gamestats_api"
 )
 
-func (g *GameStatsAPI) PostEvent(
+func (g *GameStatsAPI) AddEvent(
 	ctx context.Context,
 	req *gamestats_api.AddEventRequest,
 ) (*gamestats_api.AddEventResponse, error) {

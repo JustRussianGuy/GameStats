@@ -6,16 +6,14 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"os"
 
 	server "github.com/JustRussianGuy/GameStats/internal/api/gamestats_api"
 	"github.com/JustRussianGuy/GameStats/internal/consumer/eventsconsumer"
-	
+
 	"github.com/JustRussianGuy/GameStats/internal/pb/gamestats_api"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	httpSwagger "github.com/swaggo/http-swagger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -55,26 +53,20 @@ func runGatewayServer() error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	swaggerPath := os.Getenv("SWAGGER_PATH")
-	if _, err := os.Stat(swaggerPath); os.IsNotExist(err) {
-		panic(fmt.Errorf("swagger file not found: %s", swaggerPath))
-	}
-
 	r := chi.NewRouter()
-	r.Get("/swagger.json", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, swaggerPath)
-	})
-
-	r.Get("/docs/*", httpSwagger.Handler(
-		httpSwagger.URL("/swagger.json"),
-	))
 
 	mux := runtime.NewServeMux()
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
 
-	err := gamestats_api.RegisterGameStatsServiceHandlerFromEndpoint(ctx, mux, ":50051", opts)
-	if err != nil {
-		panic(err)
+	if err := gamestats_api.RegisterGameStatsServiceHandlerFromEndpoint(
+		ctx,
+		mux,
+		":50051",
+		opts,
+	); err != nil {
+		return err
 	}
 
 	r.Mount("/", mux)
