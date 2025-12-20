@@ -1,7 +1,7 @@
 database:
   host: "127.0.0.1"
   port: 5432
-  username: "admin"
+  username: "postgress"
   password: "12345"
   name: "gamestats"
   ssl_mode: "disable"

@@ -23,7 +23,7 @@ services:
     container_name: postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: admin
+      POSTGRES_USER: postgress
       POSTGRES_PASSWORD: 12345
       POSTGRES_DB: gamestats
     ports:
