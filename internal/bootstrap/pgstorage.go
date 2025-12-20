@@ -10,10 +10,10 @@ import (
 
 func InitPGStorage(cfg *config.Config) *pgstorage.PGstorage {
 	connectionString := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s preferSimpleProtocol=true",
+		"host=%s port=%d user=%s password=%s dbname=gamestats sslmode=%s preferSimpleProtocol=true",
 		cfg.Database.Host, cfg.Database.Port,
 		cfg.Database.Username, cfg.Database.Password,
-		cfg.Database.DBName, cfg.Database.SSLMode,
+		cfg.Database.SSLMode,
 	)
 
 	storage, err := pgstorage.NewPGStorage(connectionString)
