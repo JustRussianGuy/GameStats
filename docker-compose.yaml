@@ -15,7 +15,7 @@ services:
       timeout: 3s
       retries: 3
     networks:
-    - students-net
+    - gamestats-net
 
   postgres:
     image: postgres:15-alpine
@@ -24,7 +24,7 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
-      POSTGRES_DB: students
+      POSTGRES_DB: gamestats
     ports:
       - "5432:5432"
     volumes:
@@ -35,31 +35,29 @@ services:
       timeout: 3s
       retries: 3
     networks:
-    - students-net
+    - gamestats-net
 
   kafka:
-    image: apache/kafka:latest
+    image: apache/kafka:3.7.0
     container_name: kafka
     environment:
-      - CLUSTER_ID=5L6g3nShT-eMCtK--X86sw  # Фиксированный кластер ID
-      - KAFKA_NODE_ID=1
-      - KAFKA_PROCESS_ROLES=broker,controller
-      - KAFKA_LISTENERS=PLAINTEXT_HOST://:9092,PLAINTEXT_DOCKER://:9094,CONTROLLER://:9093
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT_HOST://localhost:9092,PLAINTEXT_DOCKER://kafka:9094
-      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,PLAINTEXT_DOCKER:PLAINTEXT
-      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
-      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT_DOCKER
-      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
-      - KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0
-      - KAFKA_LOG_DIRS=/kafka/kraft-combined-logs
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CLUSTER_ID: "kraft-gamestats-1"
     ports:
       - "9092:9092"
-      - "9094:9094"
-    volumes:
-      - kafka_data:/kafka/kraft-combined-logs
     networks:
-      - students-net
+      - gamestats-net
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -69,11 +67,10 @@ services:
     ports:
       - "8081:8080"
     environment:
-      - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka:9094  # Используем внутренний порт
-      - KAFKA_CLUSTERS_0_NAME=kraft
-      - KAFKA_UI_AUTH_ENABLED=false
+      - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_CLUSTERS_0_NAME=gamestats
     networks:
-      - students-net
+      - gamestats-net
 
 volumes:
   redis_data:
@@ -82,6 +79,6 @@ volumes:
   kafka_data:
 
 networks:
-  students-net:
-    name: students-net
+  gamestats-net:
+    name: gamestats-net
     driver: bridge

@@ -16,12 +16,12 @@ func NewPGStorage(connString string) (*PGstorage, error) {
 
 	config, err := pgxpool.ParseConfig(connString)
 	if err != nil {
-		return nil, errors.Wrap(err, "ошибка парсинга конфига")
+		return nil, errors.Wrap(err, "config parcing error")
 	}
 
 	db, err := pgxpool.NewWithConfig(context.Background(), config)
 	if err != nil {
-		return nil, errors.Wrap(err, "ошибка подключения")
+		return nil, errors.Wrap(err, "connection error")
 	}
 	storage := &PGstorage{
 		db: db,
@@ -55,4 +55,3 @@ func (s *PGstorage) initTables() error {
 	}
 	return nil
 }
-
