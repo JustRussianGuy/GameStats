@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+
   redis:
     image: redis:7-alpine
     container_name: redis
@@ -23,7 +24,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_PASSWORD: 12345
       POSTGRES_DB: gamestats
     ports:
       - "5432:5432"
@@ -82,3 +83,5 @@ networks:
   gamestats-net:
     name: gamestats-net
     driver: bridge
+
+
