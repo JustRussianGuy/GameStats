@@ -12,12 +12,13 @@ func InitPGStorage(cfg *config.Config) *pgstorage.PGstorage {
 
 	// Формируем строку подключения в формате URI
 	connectionString := fmt.Sprintf(
-		"postgres://%s:%s@%s:%d/%s",
-		cfg.Database.Username,
-		cfg.Database.Password,
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		cfg.Database.Host,
 		cfg.Database.Port,
-		cfg.Database.DBName, // берём имя базы из config.yaml
+		cfg.Database.Username,
+		cfg.Database.Password,
+		cfg.Database.DBName, // <- вот здесь
+		cfg.Database.SSLMode,
 	)
 
 	storage, err := pgstorage.NewPGStorage(connectionString)
