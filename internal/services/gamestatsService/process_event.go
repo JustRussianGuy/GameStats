@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/JustRussianGuy/GameStats/internal/models"
+	"github.com/JustRussianGuy/GameStats/internal/redis"
 )
 
 func (s *GameStatsService) ProcessGameEvent(
@@ -25,6 +26,10 @@ func (s *GameStatsService) ProcessGameEvent(
 	if err := s.storage.IncrementDeath(ctx, victimID); err != nil {
 		return err
 	}
+
+	redis.RDB.Del(ctx, "leaderboard")
+    redis.RDB.Del(ctx, "player:"+killerID)
+    redis.RDB.Del(ctx, "player:"+victimID)
 
 	return nil
 }
