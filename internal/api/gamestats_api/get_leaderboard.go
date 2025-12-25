@@ -2,7 +2,6 @@ package gamestats_api
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/JustRussianGuy/GameStats/internal/pb/gamestats_api"
 )
@@ -20,7 +19,7 @@ func (g *GameStatsAPI) GetLeaderboard(
 	resp := make([]*gamestats_api.PlayerStats, 0, len(players))
 	for _, p := range players {
 		resp = append(resp, &gamestats_api.PlayerStats{
-			PlayerId: strconv.FormatUint(p.PlayerID, 10), // ← ВАЖНО
+			PlayerId: p.PlayerID,
 			Kills:    int64(p.Kills),
 			Deaths:   int64(p.Deaths),
 			Score:    int64(p.Score),

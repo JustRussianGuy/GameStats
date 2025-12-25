@@ -68,7 +68,7 @@ func (s *GameStatsServiceSuite) TestProcessGameEventKillError() {
 
 func (s *GameStatsServiceSuite) TestGetPlayerStats() {
 	stats := &models.PlayerStats{
-		PlayerID: 1,
+		PlayerID: "1",
 		Kills:    10,
 		Deaths:   3,
 		Score:    7,
@@ -87,8 +87,8 @@ func (s *GameStatsServiceSuite) TestGetPlayerStats() {
 func (s *GameStatsServiceSuite) TestGetLeaderboardDefaultLimit() {
 	
 	leaderboard := []*models.PlayerStats{
-		{PlayerID: 1, Score: 10},
-		{PlayerID: 2, Score: 7},
+		{PlayerID: "1", Score: 10},
+		{PlayerID: "2", Score: 7},
 	}
 	
 

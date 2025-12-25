@@ -12,7 +12,6 @@ func (g *GameStatsAPI) GetPlayerStats(
 	req *gamestats_api.PlayerRequest,
 ) (*gamestats_api.PlayerStats, error) {
 
-	// Преобразуем string -> uint64
 	playerID, err := strconv.ParseUint(req.PlayerId, 10, 64)
 	if err != nil {
 		return nil, err
@@ -24,10 +23,9 @@ func (g *GameStatsAPI) GetPlayerStats(
 	}
 
 	return &gamestats_api.PlayerStats{
-		PlayerId: strconv.FormatUint(stats.PlayerID, 10), // uint64 -> string
-		Kills:    int64(stats.Kills),                     // uint64 -> int64
-		Deaths:   int64(stats.Deaths),                    // uint64 -> int64
+		PlayerId: stats.PlayerID,
+		Kills:    int64(stats.Kills),
+		Deaths:   int64(stats.Deaths),
 		Score:    int64(stats.Score),
 	}, nil
 }
-
