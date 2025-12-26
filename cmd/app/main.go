@@ -1,38 +1,53 @@
 package main
 
 import (
+    "context"
 	"fmt"
 	"os"
+    "time"
 
 	"github.com/JustRussianGuy/GameStats/config"
 	"github.com/JustRussianGuy/GameStats/internal/bootstrap"
+    appredis "github.com/JustRussianGuy/GameStats/internal/redis"
+    "github.com/JustRussianGuy/GameStats/internal/kafka"
 )
 
 func main() {
+	cfg, err := config.LoadConfig(os.Getenv("configPath"))
+	if err != nil {
+		panic(fmt.Sprintf("failed to load config: %v", err))
+	}
 
-    cfg, err := config.LoadConfig(os.Getenv("configPath"))
+	// Redis FIRST
+	bootstrap.InitRedis(cfg)
+
+    ctx := context.Background()
+    err = appredis.RDB.Set(ctx, "debug_key", "ok", 1*time.Minute).Err()
     if err != nil {
-        panic(fmt.Sprintf("failed to load config: %v", err))
+        fmt.Println("Redis SET error:", err)
+    } else {
+        fmt.Println("Redis SET ok")
     }
 
-    // PostgreSQL storage
-    playerStorage := bootstrap.InitPGStorage(cfg)
+    val, err := appredis.RDB.Get(ctx, "debug_key").Result()
+    if err != nil {
+        fmt.Println("Redis GET error:", err)
+    } else {
+        fmt.Println("Redis GET debug_key =", val)
+    }
 
-    // Redis
-    bootstrap.InitRedis(cfg)
+	// PostgreSQL
+	playerStorage := bootstrap.InitPGStorage(cfg)
 
-    // Main business service
-    gameStatsService := bootstrap.InitGameStatsService(playerStorage, cfg)
+	// Services
+	gameStatsService := bootstrap.InitGameStatsService(playerStorage, cfg)
 
-    // Processor for player events (kill/death)
-    playerEventsProcessor := bootstrap.InitGameEventsProcessor(gameStatsService)
+    brokers := []string{fmt.Sprintf("%s:%d", cfg.Kafka.Host, cfg.Kafka.Port)}
+    producer := kafka.NewProducer(brokers, cfg.Kafka.PlayerEventsTopic)
 
-    // Kafka consumer for game events
-    kafkaConsumer := bootstrap.InitGameEventsConsumer(cfg, playerEventsProcessor)
+	playerEventsProcessor := bootstrap.InitGameEventsProcessor(gameStatsService)
+	kafkaConsumer := bootstrap.InitGameEventsConsumer(cfg, playerEventsProcessor)
+	api := bootstrap.InitGameStatsAPI(gameStatsService, producer)
 
-    // API (POST /events, GET /stats/{id}, GET /leaderboard)
-    api := bootstrap.InitGameStatsAPI(gameStatsService)
-
-    // Run HTTP API + Kafka consumer
-    bootstrap.AppRun(*api, kafkaConsumer)
+	bootstrap.AppRun(*api, kafkaConsumer)
 }

@@ -36,6 +36,10 @@ func (g *GameStatsAPI) AddEvent(
 		return &gamestats_api.AddEventResponse{Success: false}, err
 	}
 
+	if err := g.kafkaProducer.ProduceEvent(ctx, event); err != nil {
+		return &gamestats_api.AddEventResponse{Success: false}, err
+	}
+
 	return &gamestats_api.AddEventResponse{Success: true}, nil
 }
 

@@ -7,42 +7,54 @@ import (
 	"time"
 
 	"github.com/JustRussianGuy/GameStats/internal/models"
-	"github.com/JustRussianGuy/GameStats/internal/redis"
+	appredis "github.com/JustRussianGuy/GameStats/internal/redis"
+	goredis "github.com/redis/go-redis/v9"
 )
 
-func (s *GameStatsService) GetLeaderboard(ctx context.Context, limit int) ([]*models.PlayerStats, error) {
+func (s *GameStatsService) GetLeaderboard(
+	ctx context.Context,
+	limit int,
+) ([]*models.PlayerStats, error) {
+
 	if limit <= 0 {
-		limit = 10 // дефолтное значение
+		limit = 10
 	}
-	fmt.Println("GetLeaderboard called, limit =", limit)
 
 	key := fmt.Sprintf("leaderboard:%d", limit)
 
-	// 1. Пробуем Redis
-	cached, err := redis.RDB.Get(context.Background(), key).Result()
-	if err == nil && cached != "" {
+	// --- Redis GET ---
+	cached, err := appredis.RDB.Get(ctx, key).Result()
+	if err == nil {
 		var stats []*models.PlayerStats
-		if err := json.Unmarshal([]byte(cached), &stats); err == nil && len(stats) > 0 {
-			fmt.Println("Cache hit for key:", key)
+		if err := json.Unmarshal([]byte(cached), &stats); err == nil {
+			fmt.Println("[Redis] cache hit:", key)
 			return stats, nil
 		}
+	} else if err == goredis.Nil {
+		fmt.Println("[Redis] cache miss:", key)
+	} else {
+		fmt.Println("[Redis] GET error:", err)
 	}
 
-	// 2. Берём из PostgreSQL
+	// --- PostgreSQL ---
 	stats, err := s.storage.GetLeaderboard(ctx, limit)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Storage returned", len(stats), "players")
 
-	// 3. Кладём в Redis с TTL 30 секунд
-	data, _ := json.Marshal(stats)
-	err = redis.RDB.Set(context.Background(), key, data, 30*time.Second).Err()
-	if err != nil {
-		fmt.Println("Redis SET error:", err)
-	} else {
-		fmt.Println("Redis cached key:", key)
+	// --- Redis SET ---
+	data, err := json.Marshal(stats)
+	if err == nil {
+		if err := appredis.RDB.Set(
+			ctx,
+			key,
+			data,
+			5*time.Minute,
+		).Err(); err == nil {
+			fmt.Println("[Redis] cached:", key)
+		}
 	}
 
 	return stats, nil
 }
+

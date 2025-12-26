@@ -1,9 +1,8 @@
 package bootstrap
 
 import (
-	
-	"github.com/JustRussianGuy/GameStats/internal/redis"
 	"github.com/JustRussianGuy/GameStats/config"
+	"github.com/JustRussianGuy/GameStats/internal/redis"
 )
 
 func InitRedis(cfg *config.Config) {

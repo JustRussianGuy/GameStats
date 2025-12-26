@@ -5,18 +5,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/redis/go-redis/v9"
+	goredis "github.com/redis/go-redis/v9"
 )
 
-var RDB *redis.Client
+var RDB *goredis.Client
 
 func InitRedis(host string, port int, db int) {
-	RDB = redis.NewClient(&redis.Options{
+	RDB = goredis.NewClient(&goredis.Options{
 		Addr: fmt.Sprintf("%s:%d", host, port),
 		DB:   db,
 	})
 
-	// Проверим подключение
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -24,22 +23,18 @@ func InitRedis(host string, port int, db int) {
 	if err != nil {
 		panic(fmt.Sprintf("failed to connect to Redis: %v", err))
 	}
+
 	fmt.Println("Redis connected:", pong)
+	fmt.Println("Redis addr:", fmt.Sprintf("%s:%d", host, port))
 }
 
-// Функция для теста записи/чтения
-func TestRedisSetGet() {
-	ctx := context.Background()
-	err := RDB.Set(ctx, "test_key", "ok", 10*time.Second).Err()
-	if err != nil {
-		fmt.Println("Redis SET error:", err)
-		return
+func InvalidateByPattern(ctx context.Context, pattern string) error {
+	iter := RDB.Scan(ctx, 0, pattern, 0).Iterator()
+	for iter.Next(ctx) {
+		if err := RDB.Del(ctx, iter.Val()).Err(); err != nil {
+			return err
+		}
 	}
-
-	val, err := RDB.Get(ctx, "test_key").Result()
-	if err != nil {
-		fmt.Println("Redis GET error:", err)
-	} else {
-		fmt.Println("Redis GET test_key =", val)
-	}
+	return iter.Err()
 }
+
